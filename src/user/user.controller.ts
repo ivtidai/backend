@@ -1,6 +1,7 @@
 import {
     Controller,
-    Get
+    Get,
+    Query
   } from '@nestjs/common';
   import { UserService } from './user.service';  
   /**
@@ -19,7 +20,14 @@ import {
      * GET http://localhost:3000/user
      */
     @Get()
-    findAll() {
-      return this.userService.findAllUser();
+    findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
+      if(!!page) {
+        page = parseInt(page+'');
+      }
+      page = !!page ? (page-1) : 0;
+      return this.userService.findAllUser({
+        skip: page,
+        take: limit
+      });
     }
   }

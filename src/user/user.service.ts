@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'shared-orm-library';
-import { Repository } from 'typeorm';
+import { FindManyOptions, Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -18,8 +18,9 @@ export class UserService {
    * this function is used to get all the user's list
    * @returns promise of array of users
    */
-  findAllUser(): Promise<User[]> {
-    return this.userRepository.find();
+  async findAllUser(options?: FindManyOptions<User>): Promise<{ users: User[], count: number}> {
+    let [users, count] = await this.userRepository.findAndCount({ ...options, relations: ['settings'] });
+    return {users, count};
   }
 
 }
