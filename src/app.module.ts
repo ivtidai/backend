@@ -1,22 +1,24 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { Settings, SharedOrmLibraryModule, User } from 'shared-orm-library';
+import { SharedOrmLibraryModule } from 'shared-orm-library';
 import { UserModule } from './user/user.module';
+import { ConfigModule } from '@nestjs/config';
+import * as dotenv from 'dotenv';
+
 @Module({
-  imports: [SharedOrmLibraryModule.forRoot(
-    {
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: '',
-      database: 'my-account',
-      synchronize: true,
-      entities: [User, Settings]
-    }
-  ), UserModule],
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+    }),
+    SharedOrmLibraryModule.forRoot(),
+    UserModule,
+  ],
   controllers: [AppController],
-  providers: [AppService]
+  providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {
+    dotenv.config();
+  }
+}
